@@ -16,9 +16,14 @@ func RetrieveSamples(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, queryResponse)
 }
 
+func RetrieveDetectorParams(c *gin.Context) {
+	c.String(http.StatusOK, "None yet")
+}
+
 func main() {
 	router := gin.Default()
 	router.Use(cors.Default())
 	router.GET("/api/experiment/:id", RetrieveSamples)
+	router.GET("/api/detector_params", RetrieveDetectorParams)
 	router.Run(":8080")
 }

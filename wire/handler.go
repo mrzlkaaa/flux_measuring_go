@@ -26,9 +26,9 @@ func RenameTable() {
 	smpl.TableName()
 }
 
-func PopulateStruct(id int64, connection func() *gorm.DB) map[string]interface{} {
+func PopulateStruct(id int64, connection func(dbname string) *gorm.DB) map[string]interface{} {
 	RenameTable()
-	db := connection()
+	db := connection("Detectors")
 	allSamples := AllSampleConstructor()
 	db.Where(&[]Sample{{Exp_id: id}}).Find(allSamples)
 	return QueryFormatting(*allSamples)
