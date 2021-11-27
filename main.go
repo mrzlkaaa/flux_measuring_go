@@ -9,14 +9,23 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
+
+type ServiceMethods interface {
+	Populate(value, param string, db *gorm.DB) *detector_params.FoilsStore
+}
+
+type Service interface {
+	PopulateByAll(db *gorm.DB) *[]detector_params.FoilsStore
+}
 
 func main() {
 	router := gin.Default()
 	router.Use(cors.Default())
 	router.GET("/api/experiment/:id", RetrieveSamples)
 	router.GET("/api/detector_params/:param/:value", RetrieveDetectorByParam)
-	// router.GET("/api/detector_params", RetrieveDetectorParam)
+	router.GET("/api/detector_params", RetrieveAllDetectorParams)
 	router.Run(":8080")
 }
 
@@ -31,22 +40,13 @@ func RetrieveDetectorByParam(c *gin.Context) {
 	conn := database.NewConnection()
 	param := c.Param("param")
 	value := c.Param("value")
-	s := detector_params.FoilsStoreConstructor()
-	// queryResponse := s.Populate(value, param, database.DbConnection)
+	var s ServiceMethods = detector_params.FoilsStoreConstructor()
 	queryResponse := s.Populate(value, param, conn.Db)
-	// queryResponse := s.Populate(param, DbConnection)
 	c.IndentedJSON(http.StatusOK, *queryResponse)
 }
 
-// func RetrieveAllDetectorParams(c *gin.Context) {
-// 	var s detector_params.QueryPopulater = detector_params.FoilsStoreConstructor()
-// 	queryResponse := detector_params.PopulatingByParam(s, value, param, DbConnection)
-// 	// queryResponse := s.Populate(param, DbConnection)
-// 	c.IndentedJSON(http.StatusOK, *queryResponse)
-// }
-
-// func RetrieveDetectorParams(c *gin.Context) {
-// 	var ss detector_params.PopulateStruct = []detector_params.FoilsStore{}
-// 	queryResponse := ss.PopulateByAll(DbConnection)
-// 	c.IndentedJSON(http.StatusOK, *queryResponse)
-// }
+func RetrieveAllDetectorParams(c *gin.Context) {
+	conn := database.NewConnection()
+	queryResponse := detector_params.PopulateByAll(conn.Db)
+	c.IndentedJSON(http.StatusOK, *queryResponse)
+}
