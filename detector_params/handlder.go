@@ -30,3 +30,9 @@ func PopulateByAll(db *gorm.DB) *[]FoilsStore {
 	fmt.Println(ms)
 	return &ms
 }
+
+func PopulateByFoilNames(value string, db *gorm.DB) *[]FoilData {
+	var ms []FoilData
+	db.Where(&[]FoilData{{Foil_type: value}}).Find(&ms)
+	return &ms
+}

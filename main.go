@@ -26,6 +26,7 @@ func main() {
 	router.GET("/api/experiment/:id", RetrieveSamples)
 	router.GET("/api/detector_params/:param/:value", RetrieveDetectorByParam)
 	router.GET("/api/detector_params", RetrieveAllDetectorParams)
+	router.GET("/api/foil_detectors/:value", RetrieveAllType)
 	router.Run(":8080")
 }
 
@@ -48,5 +49,13 @@ func RetrieveDetectorByParam(c *gin.Context) {
 func RetrieveAllDetectorParams(c *gin.Context) {
 	conn := database.NewConnection()
 	queryResponse := detector_params.PopulateByAll(conn.Db)
+	c.IndentedJSON(http.StatusOK, *queryResponse)
+}
+
+func RetrieveAllType(c *gin.Context) {
+	conn := database.NewConnection()
+	value := c.Param("value")
+	// var s ServiceMethods = detector_params.FoilsStoreConstructor()
+	queryResponse := detector_params.PopulateByFoilNames(value, conn.Db)
 	c.IndentedJSON(http.StatusOK, *queryResponse)
 }
