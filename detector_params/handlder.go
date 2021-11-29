@@ -2,6 +2,7 @@ package detector_params
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 
 	"gorm.io/gorm"
@@ -34,5 +35,7 @@ func PopulateByAll(db *gorm.DB) *[]FoilsStore {
 func PopulateByFoilNames(value string, db *gorm.DB) *[]FoilData {
 	var ms []FoilData
 	db.Where(&[]FoilData{{Foil_type: value}}).Find(&ms)
+	sort.Slice(ms, func(i, j int) bool { return ms[i].Name < ms[j].Name })
+
 	return &ms
 }
