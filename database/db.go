@@ -1,14 +1,20 @@
 package database
 
 import (
+	"flux_meas/detector_params"
 	"fmt"
+	"strconv"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-type Storage struct {
-	Db *gorm.DB
+type Storage interface {
+	Populate(value, param string) detector_params.FoilsStore
+}
+
+type storage struct {
+	db *gorm.DB
 }
 
 func DbConnection(dbname string) *gorm.DB {
@@ -21,10 +27,18 @@ func DbConnection(dbname string) *gorm.DB {
 	return conn
 }
 
-func NewConnection() *Storage {
-	// instance1 := DbConnection("Detectors")
-	// db1 := &Storage{db: instance1}
-	instance2 := DbConnection("foilsstore")
-	// db2 := &Storage{db: instance2}
-	return &Storage{Db: instance2}
+func NewConnection(db *gorm.DB) Storage {
+	return &storage{db: db}
+}
+
+func (s *storage) Populate(value, param string) detector_params.FoilsStore {
+	var params detector_params.FoilsStore
+	// db := connection("foilsstore")
+	query := fmt.Sprintf("%v = ?", param)
+	s.db.First(params, query, value)
+	params.Abundance = params.Abundance / 100
+	to_float, _ := strconv.ParseFloat(params.Release, 64)
+	params.Release = strconv.FormatFloat(to_float/100, 'f', 3, 64)
+	fmt.Println(params)
+	return params
 }

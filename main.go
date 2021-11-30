@@ -21,6 +21,7 @@ type Service interface {
 }
 
 func main() {
+
 	router := gin.Default()
 	router.Use(cors.Default())
 	router.GET("/api/experiment/:id", RetrieveSamples)
@@ -38,7 +39,8 @@ func RetrieveSamples(c *gin.Context) {
 }
 
 func RetrieveDetectorByParam(c *gin.Context) {
-	conn := database.NewConnection()
+	conn := database.DbConnection("foilsstore")
+	storage = database.NewConnection(conn)
 	param := c.Param("param")
 	value := c.Param("value")
 	var s ServiceMethods = detector_params.FoilsStoreConstructor()
