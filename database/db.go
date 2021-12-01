@@ -1,16 +1,17 @@
 package database
 
 import (
-	"flux_meas/detector_params"
+	"flux_meas/detecParams"
 	"fmt"
-	"strconv"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 type Storage interface {
-	Populate(value, param string) detector_params.FoilsStore
+	PopulateByParam(value, param string) (detecParams.FoilsStore, error)
+	PopulateByAll() ([]detecParams.FoilsStore, error)
+	PopulateAllByFoilType(value string) ([]detecParams.FoilData, error)
 }
 
 type storage struct {
@@ -31,14 +32,8 @@ func NewConnection(db *gorm.DB) Storage {
 	return &storage{db: db}
 }
 
-func (s *storage) Populate(value, param string) detector_params.FoilsStore {
-	var params detector_params.FoilsStore
-	// db := connection("foilsstore")
-	query := fmt.Sprintf("%v = ?", param)
-	s.db.First(params, query, value)
-	params.Abundance = params.Abundance / 100
-	to_float, _ := strconv.ParseFloat(params.Release, 64)
-	params.Release = strconv.FormatFloat(to_float/100, 'f', 3, 64)
-	fmt.Println(params)
-	return params
-}
+// func (s *storage) PopulateByAll() ([]detector_params.FoilsStore, error) {
+// 	var all_params []detector_params.FoilsStore
+// 	status := s.db.Find(&all_params)
+// 	return all_params, status.Error
+// }
