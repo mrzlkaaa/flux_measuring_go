@@ -9,15 +9,12 @@ import (
 
 func (s *Server) Router() *gin.Engine {
 	router := s.engine
-	params := router.Group("/api")
+	r1 := router.Group("/api")
 	{
-		params.GET("/detector_params/", s.RetrieveAllDetectorParams())
-		params.GET("/detector_params/:param/:value", s.RetrieveDetectorParamByQuery())
+		r1.GET("/detector_params", s.RetrieveAllDetectorParams())
+		r1.GET("/detector_params/:param/:value", s.RetrieveDetectorParamByQuery())
+		r1.GET("/foil_detectors/:value", s.RetrieveFoilsByType())
 
-	}
-	foils := router.Group("/api/foil_detectors")
-	{
-		foils.GET("/:value", s.RetrieveFoilsByType())
 	}
 	return router
 }

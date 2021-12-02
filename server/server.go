@@ -3,7 +3,6 @@ package server
 import (
 	"flux_meas/detecParams"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,8 +16,9 @@ func NewServer(engine *gin.Engine, paramService detecParams.ParamsService) *Serv
 }
 
 func (s *Server) Run() error {
+
 	r := s.Router()
-	r.Use(cors.Default())
+	// r.Use(cors.Default())
 	err := r.Run(":8080")
 	if err != nil {
 		panic(err)
