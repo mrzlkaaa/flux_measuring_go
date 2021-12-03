@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,6 +15,7 @@ func (s *Server) Router() *gin.Engine {
 		r1.GET("/detector_params", s.RetrieveAllDetectorParams())
 		r1.GET("/detector_params/:param/:value", s.RetrieveDetectorParamByQuery())
 		r1.GET("/foil_detectors/:value", s.RetrieveFoilsByType())
+		r1.GET("/experiment/:id", s.PopulateWireByQueryId())
 
 	}
 	return router
@@ -40,6 +42,15 @@ func (s *Server) RetrieveFoilsByType() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		value := c.Param("value")
 		get_data, _ := s.paramService.PopulateAllByFoilType(value)
+		fmt.Println(get_data)
+		c.IndentedJSON(http.StatusOK, get_data)
+	}
+}
+
+func (s *Server) PopulateWireByQueryId() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
+		get_data, _ := s.wireService.PopulateByQueryId(id)
 		fmt.Println(get_data)
 		c.IndentedJSON(http.StatusOK, get_data)
 	}

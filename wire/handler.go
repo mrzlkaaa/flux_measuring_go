@@ -1,35 +1,27 @@
 package wire
 
-import (
-	"fmt"
-
-	"gorm.io/gorm"
-)
-
-func QueryFormatting(sp []Sample) map[string]interface{} {
-	var sliceName []int64
-	var sliceAct []float64
-	for _, v := range sp {
-		sliceName = append(sliceName, v.Name)
-		sliceAct = append(sliceAct, v.Activity)
-	}
-	mapping := map[string]interface{}{
-		"Name":     sliceName,
-		"Activity": sliceAct,
-	}
-	fmt.Println(mapping)
-	return mapping
+type WireService interface {
+	PopulateByQueryId(id int64) (map[string]interface{}, error)
 }
 
-func RenameTable() {
-	var smpl SetTableName = SampleConstructor()
-	smpl.TableName()
+type WireRepo interface {
+	PopulateByQueryId(id int64) (map[string]interface{}, error)
 }
 
-func PopulateStruct(id int64, connection func(dbname string) *gorm.DB) map[string]interface{} {
-	RenameTable()
-	db := connection("Detectors")
-	allSamples := AllSampleConstructor()
-	db.Where(&[]Sample{{Exp_id: id}}).Find(allSamples)
-	return QueryFormatting(*allSamples)
+type wireService struct {
+	storage WireRepo
+}
+
+// func RenameTable() {
+// 	var smpl SetTableName = SampleConstructor()
+// 	smpl.TableName()
+// }
+
+func NewWireService(db WireRepo) WireService {
+	return &wireService{storage: db}
+}
+
+func (s *wireService) PopulateByQueryId(id int64) (map[string]interface{}, error) {
+	get_data, err := s.storage.PopulateByQueryId(id)
+	return get_data, err
 }

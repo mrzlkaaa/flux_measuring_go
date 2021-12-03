@@ -4,6 +4,7 @@ import (
 	"flux_meas/database"
 	"flux_meas/detecParams"
 	"flux_meas/server"
+	"flux_meas/wire"
 
 	"github.com/gin-gonic/gin"
 )
@@ -12,11 +13,15 @@ func main() {
 
 	router := gin.Default()
 	router.Use(CORSMiddleware())
-	conn := database.DbConnection("foilsstore")
-	storage := database.NewConnection(conn)
-	param_service := detecParams.NewParamsService(storage)
-	server := server.NewServer(router, param_service)
+	connLib := database.DbConnection("foilsstore")
+	connDet := database.DbConnection("Detectors")
+	storageLib := database.NewConnection(connLib)
+	storageDet := database.NewConnection(connDet)
+	param_service := detecParams.NewParamsService(storageLib)
+	wire_service := wire.NewWireService(storageDet)
+	server := server.NewServer(router, param_service, wire_service)
 	server.Run()
+
 }
 
 func CORSMiddleware() gin.HandlerFunc {

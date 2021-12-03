@@ -6,8 +6,8 @@ type SetTableName interface {
 
 type Experiment struct {
 	ID      int64
-	Name    string   `gorm:"default:newTestInsert"`
-	Samples []Sample `gorm:"foreignKey:Exp_id"`
+	Name    string
+	Samples []Sample
 }
 
 type Sample struct {
@@ -22,21 +22,4 @@ func (exp *Experiment) TableName() string {
 
 func (smpl *Sample) TableName() string {
 	return "sample"
-}
-
-// func (*[]Sample) TableName() string {
-// 	return "sample"
-// }
-
-func ExperimentConstructor(id int64) *Experiment {
-	return &Experiment{ID: id}
-	// return &Experiment{Name: name}
-}
-
-func SampleConstructor() *Sample {
-	return &Sample{}
-}
-
-func AllSampleConstructor() *[]Sample {
-	return &[]Sample{}
 }

@@ -12,6 +12,7 @@ type Storage interface {
 	PopulateByParam(value, param string) (detecParams.FoilsStore, error)
 	PopulateByAll() ([]detecParams.FoilsStore, error)
 	PopulateAllByFoilType(value string) ([]detecParams.FoilData, error)
+	PopulateByQueryId(id int64) (map[string]interface{}, error)
 }
 
 type storage struct {
